@@ -21,11 +21,15 @@ async function main() {
 
     const contractFactory = new ethers.ContractFactory(abi, bynary, wallet)
 
-    console.log('Deploying contract...')
-
     const contract = await contractFactory.deploy()
 
-    console.log(contract)
+    const transactionReceipt = await contract.deploymentTransaction().wait(1)
+
+    console.log('Deployment transaction:')
+    console.log(contract.deploymentTransaction())
+
+    console.log('Transaction receipt:')
+    console.log(transactionReceipt)
 }
 
 main()
