@@ -1,29 +1,34 @@
-const ethers = require('ethers')
-const fs = require('fs')
-require('dotenv').config()
+import { ethers } from 'ethers'
+import { readFileSync } from 'fs-extra'
+import 'dotenv/config'
+import { SimpleStorage } from './SimpleStorage'
 
 async function main() {
     // compile contracts in our code
     // compile contracts separately
 
-    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
+    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL!)
 
-    const encryptedJsonKey = fs.readFileSync('./.encryptedKey.json', 'utf8')
+    const encryptedJsonKey = readFileSync('./.encryptedKey.json', 'utf8')
 
     let wallet = ethers.Wallet.fromEncryptedJsonSync(
         encryptedJsonKey,
-        process.env.PRIVATE_KEY_PASSWORD
+        process.env.PRIVATE_KEY_PASSWORD!
     )
 
     wallet = await wallet.connect(provider)
 
-    const abi = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf8')
-    const bynary = fs.readFileSync(
+    const abi = readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf8')
+    const bynary = readFileSync(
         './SimpleStorage_sol_SimpleStorage.bin',
         'utf-8'
     )
 
-    const contractFactory = new ethers.ContractFactory(abi, bynary, wallet)
+    const contractFactory = new ethers.ContractFactory<any[], SimpleStorage>(
+        abi,
+        bynary,
+        wallet
+    )
 
     console.log('Depolying contract...')
 
