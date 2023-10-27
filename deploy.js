@@ -1,4 +1,3 @@
-const { sign } = require('crypto')
 const ethers = require('ethers')
 const fs = require('fs')
 require('dotenv').config()
@@ -9,7 +8,14 @@ async function main() {
 
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
 
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+    const encryptedJsonKey = fs.readFileSync('./.encryptedKey.json', 'utf8')
+
+    let wallet = ethers.Wallet.fromEncryptedJsonSync(
+        encryptedJsonKey,
+        process.env.PRIVATE_KEY_PASSWORD
+    )
+
+    wallet = await wallet.connect(provider)
 
     const abi = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf8')
     const bynary = fs.readFileSync(
